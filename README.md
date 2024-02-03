@@ -11,17 +11,27 @@ This is a Mini-project to develop a Spring Boot based RESTful API service for a 
 Create New Account or Register
 
 POST METHOD :{baseUrl}/api/auth/regjster
+
 {"username":"Raju",
+
 "password":"Raju@123",
+
 "email":"raju@gmail.com",
+
 "role":"USER"
+
 }
 
 Login
+
 POST METHOD :{baseUrl}/api/auth/login
+
 Request Body :{
+
 "email":"raju@gmail.com",
+
 "password":"raju@123"
+
 }
 
 Update Profile
