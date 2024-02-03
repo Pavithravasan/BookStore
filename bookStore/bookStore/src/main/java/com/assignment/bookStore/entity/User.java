@@ -2,6 +2,7 @@ package com.assignment.bookStore.entity;
 
 import com.assignment.bookStore.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,43 +25,51 @@ import java.util.List;
                 @UniqueConstraint(columnNames = "email")
         })
 public class User implements UserDetails {
- @Id
- @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
     @Column
     private String username;
     @Column
+    @Email
     private String email;
     @Column
     private String password;
-   @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
+    @Column
     private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
+
     @Override
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
+
     @Override
-    public String getUsername(){
+    public String getUsername() {
         return email;
     }
+
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
+
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
     @Override
     public boolean isEnabled() {
         return true;

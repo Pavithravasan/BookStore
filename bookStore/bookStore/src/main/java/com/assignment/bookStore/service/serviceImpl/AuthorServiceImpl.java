@@ -7,6 +7,7 @@ import com.assignment.bookStore.repository.AuthorRepository;
 import com.assignment.bookStore.service.AuthorService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorDTO getAuthorById(long id) throws NotFoundException {
         try{
-        Author author1= authorRepository.findById(id).get();
+        Author author1= authorRepository.findById(id).orElseThrow(()-> new UsernameNotFoundException("AuthorId is invalid"));
         AuthorDTO authorDTO1 = modelMapper.map(author1, AuthorDTO.class);
         return authorDTO1;
     }catch (Exception e){

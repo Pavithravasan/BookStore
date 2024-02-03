@@ -6,7 +6,9 @@ import com.assignment.bookStore.dto.ReviewDTO;
 import com.assignment.bookStore.enums.Status;
 import com.assignment.bookStore.exceptions.NotFoundException;
 import com.assignment.bookStore.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +27,7 @@ public class BookController {
     }
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-     public ResponseDTO<BookDTO> saveBook(@RequestBody BookDTO bookDto) throws NotFoundException {
+     public ResponseDTO<BookDTO> saveBook(@Valid @RequestBody BookDTO bookDto) throws NotFoundException {
         return new ResponseDTO<>(Status.SUCCESS,bookService.saveBook(bookDto),"Book saved successfully");
     }
     @GetMapping("/{isbn}")
@@ -34,7 +36,7 @@ public class BookController {
     }
     @PutMapping("/{isbn}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseDTO<BookDTO> updateBookById(@PathVariable long isbn, @RequestBody BookDTO bookDto) throws NotFoundException {
+    public ResponseDTO<BookDTO> updateBookById(@PathVariable long isbn, @Valid @RequestBody BookDTO bookDto) throws NotFoundException {
         return new ResponseDTO<>(Status.SUCCESS,bookService.updateBook(isbn,bookDto),"Fetched List of Books");
     }
     @DeleteMapping("/{isbn}")

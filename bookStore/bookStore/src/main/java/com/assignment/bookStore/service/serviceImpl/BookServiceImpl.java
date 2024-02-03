@@ -5,6 +5,7 @@ import com.assignment.bookStore.dto.BookDTO;
 import com.assignment.bookStore.dto.ReviewDTO;
 import com.assignment.bookStore.entity.Book;
 import com.assignment.bookStore.entity.BookReview;
+import com.assignment.bookStore.exceptions.DataAlreadyPresentException;
 import com.assignment.bookStore.exceptions.NotFoundException;
 import com.assignment.bookStore.repository.BookRepository;
 import com.assignment.bookStore.repository.ReviewRepository;
@@ -12,6 +13,7 @@ import com.assignment.bookStore.service.AuthorService;
 import com.assignment.bookStore.service.BookService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,16 +45,19 @@ private AuthorService authorService;
 
     @Override
     public BookDTO getBookById(long isbn) {
-        Book book=bookRepository.findById(isbn).get();
+        Book book=bookRepository.findById(isbn).orElseThrow(()-> new UsernameNotFoundException("INVALID_BOOKID"));
         BookDTO bookDto= modelMapper.map(book, BookDTO.class);
         return bookDto;
     }
 
     @Override
     public BookDTO saveBook(BookDTO bookDto) throws NotFoundException {
+        if(bookDto.getAuthor().getAuthorId()==null){
+            throw new NotFoundException("Author Id not  present");
+        }
         Optional<Book> bookOptional=bookRepository.findByTitleAndAuthorAuthorId(bookDto.getTitle(),bookDto.getAuthor().getAuthorId());
         if(bookOptional.isPresent()){
-            throw new NotFoundException("Book already present");
+            throw new DataAlreadyPresentException("Book already present");
         }
         Book book = modelMapper.map(bookDto,Book.class);
         book.setAvailable(true);
@@ -84,15 +89,15 @@ private AuthorService authorService;
 
     @Override
     public BookDTO updateBook(long isbn, BookDTO bookDto) throws NotFoundException {
-        Optional<Book> bookOptional=bookRepository.findByTitleAndAuthorAuthorId(bookDto.getTitle(),bookDto.getAuthor().getAuthorId());
-        if(bookOptional.isPresent() && bookOptional.get().getIsbn()!=isbn){
-            throw new NotFoundException("Book already present");
+        if(bookDto.getAuthor().getAuthorId()==null){
+            throw new NotFoundException("Author Id not  present");
         }
+        AuthorDTO authorDto=authorService.getAuthorById(bookDto.getAuthor().getAuthorId());
+        getBookById(isbn);
         Book book = modelMapper.map(bookDto,Book.class);
         book.setAvailable(true);
         Book savedBook= bookRepository.save(book);
         BookDTO savedBookDTO = modelMapper.map(savedBook, BookDTO.class);
-        AuthorDTO authorDto=authorService.getAuthorById(bookDto.getAuthor().getAuthorId());
         savedBookDTO.setAuthor(authorDto);
         return savedBookDTO;
     }

@@ -1,4 +1,3 @@
-/*
 package com.assignment.bookStore.controller;
 
 import com.assignment.bookStore.dto.AuthorDTO;
@@ -6,8 +5,11 @@ import com.assignment.bookStore.dto.BookDTO;
 import com.assignment.bookStore.dto.ResponseDTO;
 import com.assignment.bookStore.dto.ReviewDTO;
 import com.assignment.bookStore.entity.Book;
+import com.assignment.bookStore.security.service.JwtService;
 import com.assignment.bookStore.service.AuthorService;
+import com.assignment.bookStore.service.AuthorizationService;
 import com.assignment.bookStore.service.BookService;
+import com.assignment.bookStore.service.serviceImpl.AuthorizationServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.writer.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.util.JsonExpectationsHelper;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,6 +35,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.CoreMatchers.is;
@@ -42,7 +46,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest
-@Disabled
 public class BookControllerTest {
     @MockBean
     public BookService bookService;
@@ -57,7 +60,10 @@ public class BookControllerTest {
     private BookDTO storyBook;
     private BookDTO frictionBook;
     private  ReviewDTO reviewDTO;
-
+    @MockBean
+    private AuthorizationServiceImpl authorizationService;
+    @MockBean
+    private JwtService jwtService;
     @BeforeEach
     public  void init(){
         storyBook=BookDTO.builder().title("HarryPotter").description("It is an amazing novel")
@@ -74,28 +80,31 @@ public class BookControllerTest {
         storyBook.setReviews(List.of(reviewDTO));
     }
 
+    @WithMockUser(username = "spring")
     @Test
     void createNewBook() throws Exception {
 
         when(bookService.saveBook(any(BookDTO.class))).thenReturn(storyBook);
 
-        this.mockMvc.perform(post("/api/books")
+        this.mockMvc.perform(post("/api/books").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(storyBook)))
                 .andExpect(status().isOk());
 
     }
+    @WithMockUser(username = "spring")
     @Test
     void createNewBookReview() throws Exception {
 
         when(bookService.saveReview(any(ReviewDTO.class),anyLong())).thenReturn(reviewDTO);
 
-        this.mockMvc.perform(post("/api/books/{isbn}/reviews",1L)
+        this.mockMvc.perform(post("/api/books/{isbn}/reviews",1L).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reviewDTO)))
                 .andExpect(status().isOk());
 
     }
+    @WithMockUser(username = "spring")
     @Test
     void shouldFetchAllBooks() throws Exception {
         List<BookDTO> list = new ArrayList<>();
@@ -103,7 +112,7 @@ public class BookControllerTest {
         list.add(frictionBook);
        //Act
         when(bookService.getAllBooks()).thenReturn(list);
-        String content= this.mockMvc.perform(get("/api/books"))
+        String content= this.mockMvc.perform(get("/api/books").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         List<BookDTO> bookDTOList= (List<BookDTO>) new ObjectMapper().readValue(content, ResponseDTO.class).getData();
@@ -111,7 +120,7 @@ public class BookControllerTest {
 
 
     }
-
+    @WithMockUser(username = "spring")
     @Test
     void shouldFetchBookById() throws Exception {
         when(bookService.getBookById(anyLong())).thenReturn(storyBook);
@@ -122,18 +131,19 @@ public class BookControllerTest {
 
 
     }
-
+    @WithMockUser(username = "spring")
     @Test
     void shouldDeleteBookById() throws Exception {
         doNothing().when(bookService).deleteBookById(anyLong());
-        this.mockMvc.perform(delete("/api/books/{isbn}", 1L))
+        this.mockMvc.perform(delete("/api/books/{isbn}", 1L).with(csrf()))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(username = "spring")
     void shouldUpdateBook() throws Exception {
         when(bookService.updateBook(anyLong(),any(BookDTO.class))).thenReturn(storyBook);
-        this.mockMvc.perform(put("/api/books/{isbn}", 1L)
+        this.mockMvc.perform(put("/api/books/{isbn}", 1L).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(storyBook)))
                 .andExpect(status().isOk())
@@ -141,4 +151,3 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.data.genera", is(storyBook.getGenera())));
     }
 }
-*/
