@@ -1,24 +1,92 @@
 # Bookstore_Management
 Online-Book-Store Management Using SPRING BOOT and REST API
 Project Description:
-This is a Mini-project to develop a Spring Boot based RESTful API service for a basic Online Book Store with the
-option to use in-memory data source. Include detailed HTTP methods and URL structures. Authentication and Authorization is provided using Spring Security.It has both user and admin privilege.
+This is a Mini-project to develop a Spring Boot based RESTful API service for a basic Online Book Store using in-memory data source.Authentication and Authorization is provided using Spring Security.It has both user and admin privilege.
+
+Access and Url Details:
+General Access:
+Create New Account or Register
+POST METHOD :{baseUrl}/api/auth/regjster
+{"username":"pavithravasan",
+"password":"Pavi@123",
+"email":"pavithravasan@gmail.com",
+"role":"USER"
+}
+Login
+POST METHOD :{baseUrl}/api/auth/login
+Request Body :{
+    "email":"pavithravasan@gmail.com",
+    "password":"Pavi@123"
+}
+Update Profile
+ PUT METHOD  :{baseUrl}/api/auth/updateProfile
+Request Body : {
+ "username":"pavithravasan",
+ "password":"Pavi@123",
+ "email":"pavithravasan@gmail.com"
+}
+
 Admin Have Following Access for this online store site:-
-Add New Books
+Add New Books :
+ POST METHOD :{baseUrl}/api/books 
+ Request Body :{
+    "title":"Harry Potter",
+    "description":"Harry Potter is a series of seven fantasy novels written by British author J. K. Rowling. The novels chronicle the lives of a young wizard, Harry Potter, and his 
+                   friends Hermione Granger and Ron Weasley, all of whom are students at Hogwarts School of Witchcraft and Wizardry. ",
+    "price":880.00,
+    "genre":"Fantasy",
+    "author":{
+   *if author is already present mention author id  or else you can omit this field and enter name and details *    
+       "authorId":1,
+       "name" :"JK Rowling",
+       "details" : "J. K. Rowling, is a British author and philanthropist. She wrote Harry Potter, a seven-volume fantasy series published from 1997 to 2007."
+     }
+  }
+
 Add New Author 
+ POST METHOD :{baseUrl}/api/author 
+ Request Body :{
+     "name" :"JK Rowling",
+     "details" : "J. K. Rowling, is a British author and philanthropist. She wrote Harry Potter, a seven-volume fantasy series published from 1997 to 2007."
+     }
 View Books Available
-Remove Books
+ -> To get all books :
+      GET METHOD :{baseUrl}/api/books
+->  To get book by id
+      GET METHOD :{baseUrl}/api/books/{isbn}
+Remove Book By id 
+ DELETE METHOD :{baseUrl}/api/books/{isbn}
 Update Book Details
+   PUT METHOD  :{baseUrl}/api/books/{isbn}
+   RequestBody :{
+    "title":"Harry Potter Part-2",
+    "description":"Harry Potter is a series of seven fantasy novels written by British author J. K. Rowling. The novels chronicle the lives of a young wizard, Harry Potter, and his 
+                  friends Hermione Granger and Ron Weasley, all of whom are students at Hogwarts School of Witchcraft and Wizardry. ",
+    "price":880.00,
+    "genre":"Fantasy",
+    "author":{
+    *if author is already present mention author id  or else you can omit this field and enter name and details *    
+       "authorId":1,
+       "name" :"JK Rowling",
+       "details" : "J. K. Rowling, is a British author and philanthropist. She wrote Harry Potter, a seven-volume fantasy series published from 1997 to 2007."
+     }
+  }
+  Since we use put method we have to pass the entire object in the request.
 View Author Details
-Update Admin profile
+  GET METHOD :{baseUrl}/api/books/{isbn}
 
 Users Have Following Access for this online store site:-
-Create New Account or Register
-Login
-View Available Books
+View Books Available
+ -> To get all books :
+      GET METHOD :{baseUrl}/api/books
+->  To get book by id
+      GET METHOD :{baseUrl}/api/books/{isbn}
 Add Review to the Books
+  POST METHOD :{baseUrl}/api/books/{isbn}/reviews
+  Request Body:{"starRating":4,
+  "bookReview":"Good to use book"}
 View Author Details
-Update User Profile
+  GET METHOD :{baseUrl}/api/books/{isbn}
 
 Tools/Framework:
 
