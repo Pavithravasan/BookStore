@@ -68,14 +68,9 @@ friends Hermione Granger and Ron Weasley, all of whom are students at Hogwarts S
 
 "author":{
 
-\*if author is already present mention author id or else you can omit this field and enter name and details \*
+\*if author is already present mention author id or else save the author using save author api and then add the id \*
 
 "authorId":1,
-
-"name" :"JK Rowling",
-
-"details" : "J. K. Rowling, is a British author and philanthropist. She wrote Harry Potter, a seven-volume fantasy series published from 1997 to 2007."
-
 }
 
 }
